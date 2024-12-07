@@ -7,9 +7,9 @@ from components.anggaran import BudgetView  # Import the budget view
 def main(page: ft.Page):
     # Page configuration
     page.fonts = {
-        "Custom-Fonts": r"D:\Tubes RPL\dompetin_app\src\fonts\Poppins-SemiBold.ttf"
+        "Custom-Fonts": "dompetin_app/src/fonts/Poppins-SemiBold.ttf"
     }
-    page.bgcolor = 0xFFF5F7FA
+    page.bgcolor = "#F5F7FA"
     page.theme = Theme(font_family="Custom-Fonts")
 
     # Navigation Rail (same as previous example)
@@ -19,7 +19,7 @@ def main(page: ft.Page):
         min_width=100,
         leading=ft.Row(
             [
-                ft.Image(src=r"D:\Tubes RPL\dompetin_app\src\assets\image.png", width=50, height=56.08),
+                ft.Image(src="dompetin_app/src/assets/image.png", width=50, height=56.08),
                 ft.Text("Dompetin", color=ft.Colors.BLACK, size=28, font_family="Custom-Fonts"),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -28,22 +28,22 @@ def main(page: ft.Page):
         group_alignment=-0.9,
         destinations=[
             ft.NavigationRailDestination(
-                icon=ft.Image(src=r"D:\Tubes RPL\dompetin_app\src\assets\Home.png"), 
-                selected_icon=ft.Image(src=r"D:\Tubes RPL\dompetin_app\src\assets\homeblue.png"), 
-                label="Dashboard"
+                icon=ft.icons.DASHBOARD_OUTLINED,
+                selected_icon=ft.Icon(ft.icons.DASHBOARD, color=ft.colors.BLUE_700, size=30),
+                label_content=ft.Text("Dashboard", size=16)
             ),
             ft.NavigationRailDestination(
-                icon=ft.Image(src=r"D:\Tubes RPL\dompetin_app\src\assets\transfergrey.png"),
-                selected_icon=ft.Image(src=r"D:\Tubes RPL\dompetin_app\src\assets\transfer.png"),
-                label="Transaksi",
+                icon=ft.icons.SWAP_HORIZ_OUTLINED,
+                selected_icon=ft.Icon(ft.icons.SWAP_HORIZ, color=ft.colors.BLUE_700, size=30),
+                label_content=ft.Text("Transaksi", size=16)
             ),
             ft.NavigationRailDestination(
-                icon=ft.Image(src=r"D:\Tubes RPL\dompetin_app\src\assets\shopping.png"),
-                selected_icon=ft.Image(src=r"D:\Tubes RPL\dompetin_app\src\assets\shoppingblue.png"),
-                label_content=ft.Text("Anggaran"),
+                icon=ft.icons.SHOPPING_CART_OUTLINED,
+                selected_icon=ft.Icon(ft.icons.SHOPPING_CART, color=ft.colors.BLUE_700, size=30),
+                label_content=ft.Text("Anggaran", size=16),
             ),
         ],
-        on_change=lambda e: page.go(["/dashboard", "/transaksi", "/anggaran"][e.control.selected_index])
+        on_change=lambda e: page.go(["/dashboard", "/transaksi", "/anggaran"][e.control.selected_index]),
     )
 
     # Content area

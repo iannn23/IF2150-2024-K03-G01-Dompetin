@@ -1,10 +1,33 @@
 import flet as ft
+import datetime
 
 def InputFormView(page: ft.Page):
     
     def button_clicked(e):
-        t.value = f"Textboxes values are:  '{tb1.value}', '{tb2.value}', '{tb3.value}', '{tb5.value}'."
+        selected_amenity_value = selected_amenity.current.label.value if selected_amenity.current else "None"
+        t.value = f"Textboxes values are: Selected Date: {selected_date.current.value}, Judul : {tb1.value}, Jumlah nominal : {tb2.value}, Catatan tambahan : {tb3.value}, Selected Amenity : {selected_amenity_value}."
+        page.update()   
+
+    selected_date = ft.Ref[ft.Text]()
+    def handle_change(e):
+        selected_date.current.value = e.control.value.strftime('%Y-%m-%d')
         page.update()
+    def handle_dismissal(e):
+        page.add(ft.Text(f"DatePicker dismissed"))
+
+    titleDate = ft.Row([ft.Icon(ft.Icons.HOTEL_CLASS), ft.Text("Date")])
+    date_picker_button = ft.IconButton(
+        icon=ft.icons.CALENDAR_MONTH,
+        on_click=lambda e: page.open(
+            ft.DatePicker(
+                first_date=datetime.datetime(year=2023, month=1, day=1),
+                last_date=datetime.datetime(year=2024, month=12, day=31),
+                on_change=handle_change,
+                on_dismiss=handle_dismissal,
+            )
+        ),
+    )
+    selected_date_display = ft.Text(ref=selected_date, value="No date selected")
 
     t = ft.Text()
     titleJudul = ft.Row([ft.Icon(ft.Icons.HOTEL_CLASS), ft.Text("Judul")])
@@ -18,31 +41,48 @@ def InputFormView(page: ft.Page):
 
     tb5 = ft.TextField(label="With an icon", icon=ft.Icons.EMOJI_EMOTIONS)
     
+    selected_amenity = ft.Ref[ft.Chip]()
     def amenity_selected(e):
+        for chip in amenity_chips:
+            chip.selected = False
+        e.control.selected = True
+        selected_amenity.current = e.control
         page.update()
 
-    title = ft.Row([ft.Icon(ft.Icons.HOTEL_CLASS), ft.Text("Kategori")])
+    title = ft.Row([ft.Icon(ft.icons.HOTEL_CLASS), ft.Text("Kategori")])
     amenities = ["Belanja", "Makan", "Hiburan", "Transportasi", "Tagihan", "Penghasilan"]
     amenity_chips = []
 
     for amenity in amenities:
-        amenity_chips.append(
-            ft.Chip(
-                label=ft.Text(amenity),
-                bgcolor=ft.Colors.GREEN_200,
-                disabled_color=ft.Colors.GREEN_100,
-                autofocus=True,
-                on_select=amenity_selected,
-            )
+        chip = ft.Chip(
+            label=ft.Text(amenity),
+            bgcolor=ft.colors.GREEN_200,
+            disabled_color=ft.colors.GREEN_100,
+            autofocus=True,
+            on_select=amenity_selected,
         )
+        amenity_chips.append(chip)
 
     b = ft.ElevatedButton(text="Submit", on_click=button_clicked)
 
     return ft.Container(
-        content=ft.Column(
-            [titleJudul, tb1, titleJumlah, tb2, title, ft.Row(amenity_chips),titleCatatan,tb3, b,t],
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=20
+        content=ft.ListView( 
+            controls=[
+                ft.Text("Input Transaksi", size=30),
+                titleDate,
+                ft.Row([date_picker_button, selected_date_display], alignment=ft.MainAxisAlignment.START),
+                titleJudul,
+                tb1,
+                titleJumlah,
+                tb2,
+                title,
+                ft.Row(amenity_chips),
+                titleCatatan,
+                tb3,
+                b,
+                t
+            ],
+            expand=1, spacing=10, padding=20, auto_scroll=True
         ),
         alignment=ft.alignment.center,
         expand=True,

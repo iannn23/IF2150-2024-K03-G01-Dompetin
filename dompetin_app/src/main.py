@@ -3,14 +3,14 @@ from flet import Theme
 from components.dashboard import DashboardView  # Import the dashboard view
 from components.transaksi import TransactionView  # Import the transaction view
 from components.anggaran import BudgetView  # Import the budget view
-from components.inputform import InputFormView
+from components.inputform import InputFormView  # Import the input form view
 
 def main(page: ft.Page):
     # Page configuration
     page.fonts = {
-        "Custom-Fonts": r"D:\Tubes RPL\dompetin_app\src\fonts\Poppins-SemiBold.ttf"
+        "Custom-Fonts": "dompetin_app/src/fonts/Poppins-SemiBold.ttf"
     }
-    page.bgcolor = 0xFFF5F7FA
+    page.bgcolor = "#F5F7FA"
     page.theme = Theme(font_family="Custom-Fonts")
 
     # Navigation Rail (same as previous example)
@@ -43,8 +43,13 @@ def main(page: ft.Page):
                 selected_icon=ft.Icon(ft.icons.SHOPPING_CART, color=ft.colors.BLUE_700, size=30),
                 label_content=ft.Text("Anggaran", size=16),
             ),
+            ft.NavigationRailDestination(
+                icon=ft.icons.APPROVAL_OUTLINED,
+                selected_icon=ft.Icon(ft.icons.APPROVAL, color=ft.colors.BLUE_700, size=30),
+                label_content=ft.Text("inputform", size=16),
+            ),
         ],
-        on_change=lambda e: page.go(["/dashboard", "/transaksi", "/anggaran"][e.control.selected_index])
+        on_change=lambda e: page.go(["/dashboard", "/transaksi", "/anggaran", "/inputform"][e.control.selected_index]),
     )
 
     # Content area
@@ -57,10 +62,11 @@ def main(page: ft.Page):
             "/dashboard": DashboardView(page),
             "/transaksi": TransactionView(page),
             "/anggaran": BudgetView(page),
+            "/inputform": InputFormView(page)
         }.get(page.route, ft.Text("Page not found"))
         
         # Update navigation rail selection to match route
-        routes = ["/dashboard", "/transaksi", "/anggaran"]
+        routes = ["/dashboard", "/transaksi", "/anggaran", "/inputform"]
         rail.selected_index = routes.index(page.route) if page.route in routes else 0
         
         page.update()

@@ -3,13 +3,14 @@ from flet import Theme
 from components.dashboard import DashboardView  # Import the dashboard view
 from components.transaksi import TransactionView  # Import the transaction view
 from components.anggaran import BudgetView  # Import the budget view
+from components.inputform import InputFormView
 
 def main(page: ft.Page):
     # Page configuration
     page.fonts = {
-        "Custom-Fonts": "dompetin_app/src/fonts/Poppins-SemiBold.ttf"
+        "Custom-Fonts": r"D:\Tubes RPL\dompetin_app\src\fonts\Poppins-SemiBold.ttf"
     }
-    page.bgcolor = "#F5F7FA"
+    page.bgcolor = 0xFFF5F7FA
     page.theme = Theme(font_family="Custom-Fonts")
 
     # Navigation Rail (same as previous example)
@@ -43,7 +44,7 @@ def main(page: ft.Page):
                 label_content=ft.Text("Anggaran", size=16),
             ),
         ],
-        on_change=lambda e: page.go(["/dashboard", "/transaksi", "/anggaran"][e.control.selected_index]),
+        on_change=lambda e: page.go(["/dashboard", "/transaksi", "/anggaran"][e.control.selected_index])
     )
 
     # Content area

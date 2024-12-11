@@ -43,13 +43,9 @@ def main(page: ft.Page):
                 selected_icon=ft.Icon(ft.icons.SHOPPING_CART, color=ft.colors.BLUE_700, size=30),
                 label_content=ft.Text("Anggaran", size=16),
             ),
-            ft.NavigationRailDestination(
-                icon=ft.icons.APPROVAL_OUTLINED,
-                selected_icon=ft.Icon(ft.icons.APPROVAL, color=ft.colors.BLUE_700, size=30),
-                label_content=ft.Text("inputform", size=16),
-            ),
         ],
-        on_change=lambda e: page.go(["/dashboard", "/transaksi", "/anggaran", "/inputform"][e.control.selected_index]),
+        
+        on_change=lambda e: page.go(["/dashboard", "/transaksi", "/anggaran"][e.control.selected_index]),
     )
 
     # Content area
@@ -62,11 +58,10 @@ def main(page: ft.Page):
             "/dashboard": DashboardView(page),
             "/transaksi": TransactionView(page),
             "/anggaran": BudgetView(page),
-            "/inputform": InputFormView(page)
         }.get(page.route, ft.Text("Page not found"))
         
         # Update navigation rail selection to match route
-        routes = ["/dashboard", "/transaksi", "/anggaran", "/inputform"]
+        routes = ["/dashboard", "/transaksi", "/anggaran"]
         rail.selected_index = routes.index(page.route) if page.route in routes else 0
         
         page.update()

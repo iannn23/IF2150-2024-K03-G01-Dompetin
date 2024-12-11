@@ -1,5 +1,6 @@
 import flet as ft
 import calendar
+import random
 from typing import List
 from collections import defaultdict
 from components.transaksi import Transaction
@@ -29,14 +30,21 @@ def update_charts(page: ft.Page, month: str, year: str, charts: list):
         alignment=ft.alignment.center,
         expand=True
     )
+    pie_chart_container = ft.Container(
+        content=ft.Text("Hint: Hover cursor over the chart", size=14),
+        alignment=ft.alignment.center,
+        expand=True
+    )
 
     # Membuat chart baru
     create_bar_chart(bar_chart_container, transactions, month, year)
     create_line_chart(line_chart_container, transactions, month, year)
+    create_pie_chart(pie_chart_container, transactions, month, year)
 
     contents = [
         bar_chart_container,
         line_chart_container,
+        pie_chart_container,
     ]
 
     charts.clear()  
@@ -228,3 +236,90 @@ def create_line_chart(line_chart_container: ft.Container, transactions: List[Tra
 
     toggle_button = ft.ElevatedButton("Toggle Line Chart", on_click=toggle_data)
     line_chart_container.content = ft.Column([chart, toggle_button])
+
+def create_pie_chart(pie_chart_container: ft.Container, transactions: List[Transaction], month: int, year: int):
+    # Get Data
+    if isinstance(month, str):
+        months_dict = {
+            "January": 1, "February": 2, "March": 3, "April": 4, "May": 5, "June": 6, 
+            "July": 7, "August": 8, "September": 9, "October": 10, "November": 11, "December": 12
+        }
+        month = months_dict.get(month, 12)  
+    
+    year = int(year)
+    
+    num_days = calendar.monthrange(year, month)[1]
+    # Get all category types
+    categories = list(set(t.category for t in transactions))
+
+    # Get total expense per category in selected month
+    category_expenses = defaultdict(int) # Make dict
+    total_expenses = 0
+    for t in transactions:
+        transaction_date = datetime.strptime(t.date, "%Y-%m-%d") # mengubah t.date menjadi datetime object
+        if transaction_date.year == year and transaction_date.month == month:
+            category_expenses[t.category] += t.amount
+            total_expenses += t.amount
+    
+    # pie chart
+    normal_radius = 50
+    hover_radius = 60
+    normal_title_style = ft.TextStyle(
+        size=12, color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD
+    )
+    hover_title_style = ft.TextStyle(
+        size=22,
+        color=ft.Colors.WHITE,
+        weight=ft.FontWeight.BOLD,
+        shadow=ft.BoxShadow(blur_radius=2, color=ft.Colors.BLACK54),
+    )
+
+    # handle chart event
+    def on_chart_event(e: ft.PieChartEvent):
+        hover_info=""
+        for idx, section in enumerate(chart.sections):
+            if idx == e.section_index:
+                section.radius = hover_radius
+                section.title_style = hover_title_style
+                category = categories[idx]
+                expense = category_expenses[category]
+                percentage = (expense / total_expenses) * 100
+                hover_info = f"{category}: {expense} ({percentage:.2f}%)"
+            else:
+                section.radius = normal_radius
+                section.title_style = normal_title_style
+        chart.update()
+        hover_text.value = hover_info
+        hover_text.update()
+
+    # color randomizer
+    def random_color():
+        return f"#{random.randint(0, 255):02x}{random.randint(0, 255):02x}{random.randint(0, 255):02x}"
+
+    # asign random color for every category
+    category_colors = {
+        category: random_color() for category in category_expenses.keys()
+    }
+    
+    # generate chart
+    chart = ft.PieChart(
+        sections=[
+            ft.PieChartSection(
+                value=expense,
+                color=category_colors[category],  # Assign a consistent color for each category
+                radius=normal_radius,
+            )
+            for category, expense in category_expenses.items()
+        ],
+        sections_space=0,
+        center_space_radius=80,
+        on_chart_event=on_chart_event,
+        expand=True,
+    )
+    hover_text = ft.Text("", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK)
+    pie_chart_container.content = ft.Column([chart, hover_text], alignment=ft.alignment.center)
+
+
+
+
+    

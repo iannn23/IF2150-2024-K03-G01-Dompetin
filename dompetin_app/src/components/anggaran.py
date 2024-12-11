@@ -1,6 +1,6 @@
 import flet as ft
 from components.carousel import create_carousel, update_carousel
-from components.charts import create_bar_chart, create_line_chart, update_charts
+from components.charts import create_bar_chart, create_line_chart, update_charts, create_pie_chart
 from components.transaksi import TransactionManager
 from datetime import datetime
 
@@ -75,12 +75,20 @@ def BudgetView(page: ft.Page):
         alignment=ft.alignment.center,
         expand=True
     )
+    pie_chart_container = ft.Container(
+        content=ft.Text("Hint: Hover cursor over the chart", size=14),
+        alignment=ft.alignment.center,
+        expand=True
+    )
+
     create_bar_chart(bar_chart_container, transactions, selected_month, selected_year)
     create_line_chart(line_chart_container, transactions, selected_month, selected_year)
+    create_pie_chart(pie_chart_container, transactions, selected_month, selected_year)
 
     charts = [
         bar_chart_container,
         line_chart_container,
+        pie_chart_container,
     ]
 
     initial_carousel = create_carousel(page, charts)

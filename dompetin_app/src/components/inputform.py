@@ -139,49 +139,65 @@ def InputFormView(page: ft.Page):
     tb3 = ft.TextField(label="Catatan", read_only=False, hint_text="Masukan catatan tambahan untuk transaksi")
 
     # tb5 = ft.TextField(label="With an icon", icon=ft.Icons.EMOJI_EMOTIONS)
+    titleTipe = ft.Row([ft.Icon(ft.icons.HOTEL_CLASS), ft.Text("Tipe")])
+    types = ["Pengeluaran", "Penghasilan"]
+    type_chips = []
+
     selected_type = ft.Ref[ft.Chip]()
     def type_selected(e):
         for chip in type_chips:
             chip.selected = False
         e.control.selected = True
         selected_type.current = e.control
+        update_categories(selected_type.current.label.value)
         page.update()
-
-    titleTipe = ft.Row([ft.Icon(ft.icons.ADD_TO_HOME_SCREEN_ROUNDED), ft.Text("Tipe")])
-    types = ["Pengeluaran", "Penghasilan"]
-    type_chips = []
-
     for type in types:
         chip = ft.Chip(
             label=ft.Text(type),
-            bgcolor=ft.colors.BLUE_100,
+            bgcolor=ft.colors.BLUE_200,
             disabled_color=ft.colors.BLUE_100,
             autofocus=True,
             on_select=type_selected,
         )
         type_chips.append(chip)
-        
+
+    titleKategori = ft.Row([ft.Icon(ft.icons.HOTEL_CLASS), ft.Text("Kategori")], opacity=0, height=0)
+    amenity_chips = ft.Row(scroll=ft.ScrollMode.AUTO, opacity=0, height=0)
+
     selected_amenity = ft.Ref[ft.Chip]()
     def amenity_selected(e):
-        for chip in amenity_chips:
+        for chip in amenity_chips.controls:
             chip.selected = False
         e.control.selected = True
         selected_amenity.current = e.control
         page.update()
 
-    titleKategori = ft.Row([ft.Icon(ft.icons.CATEGORY), ft.Text("Kategori")])
-    amenities = ["Belanja", "Makan", "Hiburan", "Transportasi", "Tagihan"]
-    amenity_chips = []
+    def update_categories(transaction_type):
+        if transaction_type == "Pengeluaran":
+            amenities = ["Belanja", "Makan", "Hiburan", "Transportasi", "Tagihan"]
+            titleKategori.opacity = 1
+            titleKategori.height = None
+            amenity_chips.opacity = 1
+            amenity_chips.height = None
+        elif transaction_type == "Penghasilan":
+            amenities = ["Income"]
+            titleKategori.opacity = 0
+            titleKategori.height = 0
+            amenity_chips.opacity = 0
+            amenity_chips.height = 0
+            selected_amenity.current = ft.Chip(label=ft.Text("Income"))
 
-    for amenity in amenities:
-        chip = ft.Chip(
-            label=ft.Text(amenity),
-            bgcolor=ft.colors.BLUE_100,
-            disabled_color=ft.colors.GREEN_100,
-            autofocus=True,
-            on_select=amenity_selected,
-        )
-        amenity_chips.append(chip)
+        amenity_chips.controls.clear()
+        for amenity in amenities:
+            chip = ft.Chip(
+                label=ft.Text(amenity),
+                bgcolor=ft.colors.BLUE_200,
+                disabled_color=ft.colors.BLUE_100,
+                autofocus=True,
+                on_select=amenity_selected,
+            )
+            amenity_chips.controls.append(chip)
+        page.update()
 
     b = ft.ElevatedButton(text="Submit", on_click=button_clicked)
 
@@ -198,7 +214,7 @@ def InputFormView(page: ft.Page):
                 titleJumlah,
                 tb2,
                 titleKategori,
-                ft.Row(amenity_chips,scroll=ft.ScrollMode.AUTO),
+                amenity_chips,
                 titleCatatan,
                 tb3,
                 b,

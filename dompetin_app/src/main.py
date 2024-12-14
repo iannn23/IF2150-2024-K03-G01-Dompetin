@@ -23,7 +23,7 @@ def main(page: ft.Page):
         min_width=100,
         leading=ft.Row(
             [
-                ft.Image(src="dompetin_app/src/assets/image.png", width=50, height=56.08),
+                ft.Image(src="dompetin_app/img/image.png", width=50, height=56.08),
                 ft.Text("Dompetin", color=ft.Colors.BLACK, size=28, font_family="Custom-Fonts"),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -110,7 +110,7 @@ def main(page: ft.Page):
         saldo_display.update()
 
         
-    if balance == 500:
+    if balance is None or balance == "":
         saldo_dialog.open = True
         page.dialog = saldo_dialog
         page.update()

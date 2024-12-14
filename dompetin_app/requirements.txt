@@ -1,0 +1,5 @@
+libraries required for the project:
+1. pydantic
+2. flet
+3. fletcarousel
+4. flet_core

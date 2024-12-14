@@ -86,7 +86,7 @@ def DashboardView(page: ft.Page):
                         padding=10,
                         width=200
                     ),
-                        ft.Text(f"Rp. {'{:,.2f}'.format(month_expense).replace(',', 'X').replace('.', ',').replace('X', '.')}", size=20, color=ft.colors.GREEN_400),
+                        ft.Text(f"Rp. {'{:,.2f}'.format(month_income).replace(',', 'X').replace('.', ',').replace('X', '.')}", size=20, color=ft.colors.GREEN_400),
                     ]),
                 ft.Column([
                     ft.Container(

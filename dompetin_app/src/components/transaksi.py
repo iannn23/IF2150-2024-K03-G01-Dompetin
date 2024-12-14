@@ -232,6 +232,10 @@ def TransactionView(page: ft.Page):
         def update_transaction_list():
             start_idx = (current_page[0] - 1) * transactions_per_page
             end_idx = start_idx + transactions_per_page
+            print(selected_month)
+            month = datetime.strptime(selected_month, "%B").month
+            month_income = transaction_manager.getMonthIncome(month)
+            month_expense = transaction_manager.getMonthExpense(month)
             transaction_items = [
                 ft.Container(
                     content=ft.ListTile(
@@ -272,10 +276,12 @@ def TransactionView(page: ft.Page):
                 )
                 for idx, t in enumerate(transactions[start_idx:end_idx])
             ]
+            
 
             content.controls = [
                 ft.Row(
                     [
+
                     ft.Text(f"Transactions for {selected_month} (Page {current_page[0]} of {total_pages})", size=24),
                     ft.Container(
                         content=add_transaction_button,
@@ -284,6 +290,12 @@ def TransactionView(page: ft.Page):
                 ),
                     ]
                 ),
+                ft.Row([
+                    ft.Text(f"+Rp. {'{:,.2f}'.format(month_income).replace(',', 'X').replace('.', ',').replace('X', '.')}", size=20, color=ft.colors.GREEN_400),
+                    ft.Text(f"-Rp. {'{:,.2f}'.format(month_expense).replace(',', 'X').replace('.', ',').replace('X', '.')}", size=20, color=ft.colors.RED_400),
+                    ft.Text(f"=", size=20),
+                    ft.Text(f"Rp. {'{:,.2f}'.format(month_income - month_expense).replace(',', 'X').replace('.', ',').replace('X', '.')}", size=20, color=ft.colors.BLUE_400),
+                ]),
                 ft.ListView(controls=transaction_items, expand=1) if transaction_items else ft.Text("No transactions found"),
                 ft.Row(
                     [

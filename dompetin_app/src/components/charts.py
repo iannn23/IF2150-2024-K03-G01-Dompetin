@@ -87,7 +87,7 @@ def create_bar_chart(bar_chart_container: ft.Container, transactions: List[Trans
                         to_y=income[day],
                         width=20,
                         color=ft.Colors.GREEN,
-                        tooltip=f"Day{day}: {income[day]}",
+                        tooltip=f"Day {day}: Rp{'{:,.2f}'.format(income[day]).replace(',', 'X').replace('.', ',').replace('X', '.')}", 
                         border_radius=2
                     ),
                     ft.BarChartRod( # Bar rod untuk expense
@@ -95,7 +95,7 @@ def create_bar_chart(bar_chart_container: ft.Container, transactions: List[Trans
                         to_y=expense[day],
                         width=20,
                         color=ft.Colors.RED,
-                        tooltip=f"Day{day}: {expense[day]}",
+                        tooltip=f"Day {day}: Rp{'{:,.2f}'.format(expense[day]).replace(',', 'X').replace('.', ',').replace('X', '.')}", 
                         border_radius=2,
                     ),
                 ],
@@ -250,7 +250,12 @@ def create_pie_chart(pie_chart_container: ft.Container, transactions: List[Trans
     
     num_days = calendar.monthrange(year, month)[1]
     # Get all category types
-    categories = list(set(t.category for t in transactions))
+    categories = []
+    for t in transactions:
+        if t.category != "Income":
+            categories.append(t.category)
+            
+    # categories = list(set(t.category for t in transactions))        
 
     # Get total expense per category in selected month
     category_expenses = defaultdict(int) # Make dict
@@ -258,8 +263,9 @@ def create_pie_chart(pie_chart_container: ft.Container, transactions: List[Trans
     for t in transactions:
         transaction_date = datetime.strptime(t.date, "%Y-%m-%d") # mengubah t.date menjadi datetime object
         if transaction_date.year == year and transaction_date.month == month:
-            category_expenses[t.category] += t.amount
-            total_expenses += t.amount
+            if t.category != "Income":
+                category_expenses[t.category] += t.amount
+                total_expenses += t.amount
     
     # pie chart
     normal_radius = 50
@@ -284,7 +290,7 @@ def create_pie_chart(pie_chart_container: ft.Container, transactions: List[Trans
                 category = categories[idx]
                 expense = category_expenses[category]
                 percentage = (expense / total_expenses) * 100
-                hover_info = f"{category}: {expense} ({percentage:.2f}%)"
+                hover_info = f"{category}: Rp{'{:,.2f}'.format(expense).replace(',', 'X').replace('.',',').replace('.',',').replace('X','.')} ({percentage:.2f}%)"
             else:
                 section.radius = normal_radius
                 section.title_style = normal_title_style

@@ -50,8 +50,8 @@ class TransactionManager:
 
     def _generate_demo_data(self):
         """Generate transaksi dummy untuk demo."""
-        titles = ["Jajan Kenan", "Gaji Kenan", "Cabut gigi ian", "Ian CheckIn", "Ian beli Kondom"]
-        categories = ["Food & Drinks","Sex","Transportation"]
+        titles = ["Jajan Kenan", "Gaji Kenan", "Cabut gigi ian", "Ian CheckIn", "Ian beli Makan"]
+        categories = ["Belanja", "Makan", "Transportasi", "Hiburan", "Tagihan"]
         for i in range(1, 13):
             for _ in range(random.randint(5, 10)):
                 day = random.randint(1, 28)
@@ -66,7 +66,6 @@ class TransactionManager:
         """Reset transactions in client storage."""
         self.transactions = []
         self._save_transactions()
-        self._generate_demo_data()
     
     def save_transaction_changes(self, transaction: Transaction, dialog: ft.AlertDialog):
         """Save changes to a transaction."""

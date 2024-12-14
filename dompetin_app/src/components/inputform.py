@@ -1,33 +1,73 @@
 import flet as ft
 import datetime
+from .balance import BalanceController
 
 def InputFormView(page: ft.Page):
     from .transaksi import TransactionManager  # Local import to avoid circular import
 
     transaction_manager = TransactionManager(page)
+    Balance_controller = BalanceController(page)
 
     def button_clicked(e):
+<<<<<<< HEAD
         from .transaksi import Transaction  # Local import to avoid circular import
 
+=======
+        from .transaksi import Transaction
+
+        
+>>>>>>> 1b8f02242eb2f90f9a9bd1e61dd16cf2c1dd31c1
         # Validate inputs
+
+        if selected_type.current is None:
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please select transaction type."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
+            return
+
         if selected_date.current.value == "No date selected":
-            page.snack_bar = ft.SnackBar(content=ft.Text("Please select a date."))
-            page.snack_bar.open = True
-            page.update()
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please select a date."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
             return
 
         if not tb1.value:
-            page.snack_bar = ft.SnackBar(content=ft.Text("Please enter a title."))
-            page.snack_bar.open = True
-            page.update()
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please fill the Title."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
             return
 
         if not tb2.value or not tb2.value.isdigit():
-            page.snack_bar = ft.SnackBar(content=ft.Text("Please enter a valid amount."))
-            page.snack_bar.open = True
-            page.update()
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please fill a valid amount."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
             return
 
+<<<<<<< HEAD
         if selected_amenity.current is None and selected_type.current.label.value == "Pengeluaran":
             page.snack_bar = ft.SnackBar(content=ft.Text("Please select a category."))
             page.snack_bar.open = True
@@ -44,16 +84,61 @@ def InputFormView(page: ft.Page):
         selected_amenity_value = selected_amenity.current.label.value if selected_amenity.current else "None"
         selected_type_value = selected_type.current.label.value if selected_type.current else "None"
         transaction = Transaction(
+=======
+        if selected_amenity.current is None:
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please select a category."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
+            return
+
+        
+
+        selected_amenity_value = selected_amenity.current.label.value if selected_amenity.current else "None"
+        if selected_type.current.label.value == "Pengeluaran":
+            selected_type_value = "expense"
+        elif selected_type.current.label.value == "Penghasilan":
+            selected_type_value = "income"
+        else:
+            selected_type_value = "None"
+
+        drafttransaction = Transaction(
+>>>>>>> 1b8f02242eb2f90f9a9bd1e61dd16cf2c1dd31c1
             title=tb1.value,
             date=selected_date.current.value,
             category=selected_amenity_value,
             amount=float(tb2.value),
             transaction_type=selected_type_value
         )
+<<<<<<< HEAD
         transaction_manager.add_transaction(transaction)  # Add transaction to TransactionManager
         t.value = str(transaction)
         page.update()   
 
+=======
+        transaction_manager.add_transaction(drafttransaction)  # Add transaction to TransactionManager
+        if selected_type_value == "expense":
+            Balance_controller.decrease_balance(float(tb2.value))
+        elif selected_type_value == "income":
+            Balance_controller.increase_balance(float(tb2.value))
+        t.value = str(drafttransaction)
+        dialog = ft.AlertDialog(
+                title=ft.Text("Message"),
+                content=ft.Text("Transaction Added."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+        def close_dlg(e):
+            dialog.open = False
+            e.control.page.update()
+
+        page.open(dialog)
+    
+>>>>>>> 1b8f02242eb2f90f9a9bd1e61dd16cf2c1dd31c1
     selected_date = ft.Ref[ft.Text]()
     def handle_change(e):
         selected_date.current.value = e.control.value.strftime('%Y-%m-%d')
@@ -145,6 +230,22 @@ def InputFormView(page: ft.Page):
         )
         type_chips.append(chip)
 
+<<<<<<< HEAD
+=======
+    titleKategori = ft.Row([ft.Icon(ft.icons.CATEGORY), ft.Text("Kategori")])
+    amenities = ["Belanja", "Makan", "Hiburan", "Transportasi", "Tagihan"]
+    amenity_chips = []
+
+    for amenity in amenities:
+        chip = ft.Chip(
+            label=ft.Text(amenity),
+            bgcolor=ft.colors.BLUE_100,
+            disabled_color=ft.colors.GREEN_100,
+            autofocus=True,
+            on_select=amenity_selected,
+        )
+        amenity_chips.append(chip)
+>>>>>>> 1b8f02242eb2f90f9a9bd1e61dd16cf2c1dd31c1
 
     b = ft.ElevatedButton(text="Submit", on_click=button_clicked)
 

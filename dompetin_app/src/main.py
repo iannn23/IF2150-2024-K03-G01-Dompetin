@@ -4,12 +4,15 @@ from components.dashboard import DashboardView  # Import the dashboard view
 from components.transaksi import TransactionView  # Import the transaction view
 from components.anggaran import BudgetView  # Import the budget view
 from components.inputform import InputFormView  # Import the input form view
+from components.balance import Balance, BalanceController
 
 def main(page: ft.Page):
     # Page configuration
     page.fonts = {
         "Custom-Fonts": "dompetin_app/src/fonts/Poppins-SemiBold.ttf"
     }
+
+    
     page.bgcolor = "#F5F7FA"
     page.theme = Theme(font_family="Custom-Fonts")
 
@@ -64,6 +67,52 @@ def main(page: ft.Page):
         routes = ["/dashboard", "/transaksi", "/anggaran"]
         rail.selected_index = routes.index(page.route) if page.route in routes else 0
         
+        page.update()
+
+    def close_dlg(e):
+        saldo_dialog.open = False
+        e.control.page.update()
+
+    saldo_input = ft.TextField(
+                label="Balance",
+                prefix_text="Rp. ",
+                input_filter=ft.NumbersOnlyInputFilter(),
+                width=400,
+        )
+     
+    balance_controller = BalanceController(page)
+
+    saldo_dialog = ft.AlertDialog(
+         content=ft.Container(
+        content=ft.Column([
+            ft.Text("Masukkan Saldo Awal", size=14),
+            saldo_input,
+            
+        ]),
+        width=400,
+        height=100,
+    ),
+        actions=[
+                ft.TextButton("Cancel", on_click=close_dlg),
+                ft.ElevatedButton("Save", on_click=lambda e: (balance_controller.set_balance(float(saldo_input.value)), close_dlg(e))),
+            ]
+    )
+
+   
+    balance = balance_controller.get_balance()
+    # Check if balance is available, if not open balance dialog
+
+    saldo_display = balance_controller.display_balance()
+
+    # Fungsi untuk memperbarui saldo
+    def update_balance_display():
+        saldo_display.value = f"Rp.{balance_controller.get_balance():,.2f}"
+        saldo_display.update()
+
+        
+    if balance == 500:
+        saldo_dialog.open = True
+        page.dialog = saldo_dialog
         page.update()
 
     # Page layout

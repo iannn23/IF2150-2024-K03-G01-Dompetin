@@ -20,8 +20,8 @@ def DashboardView(page: ft.Page):
     balance = balance_controller.get_balance()
     # display_balance = ft.Text(f"Rp.{balance}"),
 
-    month_income = transaction_manager.getMonthIncome(current_month)
-    month_expense = transaction_manager.getMonthExpense(current_month)
+    month_income = transaction_manager.getMonthIncome(current_date.month)
+    month_expense = transaction_manager.getMonthExpense(current_date.month)
 
 
 
@@ -86,7 +86,7 @@ def DashboardView(page: ft.Page):
                         padding=10,
                         width=200
                     ),
-                        ft.Text(f"Rp.{month_income}", size=20, color=ft.colors.GREEN_100),
+                        ft.Text(f"Rp. {'{:,.2f}'.format(month_expense).replace(',', 'X').replace('.', ',').replace('X', '.')}", size=20, color=ft.colors.GREEN_400),
                     ]),
                 ft.Column([
                     ft.Container(
@@ -95,7 +95,7 @@ def DashboardView(page: ft.Page):
                         padding=10,
                         width=200
                     ),
-                    ft.Text(f"Rp.{month_expense}", size=20, color=ft.colors.RED_100),
+                    ft.Text(f"Rp. {'{:,.2f}'.format(month_expense).replace(',', 'X').replace('.', ',').replace('X', '.')}", size=20, color=ft.colors.RED_400),
                     ]),
                 ])
             ],

@@ -22,8 +22,6 @@ class TransactionManager:
         self.balance_controller = BalanceController(page)
         # Load transaksi dari client storage
         self.transactions: List[Transaction] = self._load_transactions()
-        if not self.transactions:  # Generate demo data jika kosong
-            self._generate_demo_data()
 
     def _load_transactions(self) -> List[Transaction]:
         """Load transaksi dari client storage."""
@@ -97,11 +95,17 @@ class TransactionManager:
         self.page.update()
 
     def getMonthIncome(self, month: str):
-        income = sum(t.amount for t in self.transactions if t.transaction_type == "income" and t.date.startswith(month))
+        income = sum(
+            t.amount for t in self.transactions
+            if t.transaction_type == "income" and datetime.strptime(t.date, "%Y-%m-%d").month == int(month)
+        )
         return income
-    
+
     def getMonthExpense(self, month: str):
-        expense = sum(t.amount for t in self.transactions if t.transaction_type == "expense" and t.date.startswith(month))
+        expense = sum(
+            t.amount for t in self.transactions
+            if t.transaction_type == "expense" and datetime.strptime(t.date, "%Y-%m-%d").month == int(month)
+        )
         return expense
         
 
@@ -123,7 +127,7 @@ def TransactionView(page: ft.Page):
                 content=ft.Column(
                     [
                         ft.TextField(value=transaction.title, label="Title", width=400),
-                        ft.TextField(value=str(transaction.amount), label="Amount", width=400,prefix="Rp. ", input_filter=ft.NumbersOnlyInputFilter()),
+                        ft.TextField(label="Amount",value= transaction.amount, width=400, read_only=False ,prefix_text="Rp. ", input_filter=ft.NumbersOnlyInputFilter()),
                         ft.Dropdown(
                             options=[
                                 ft.dropdown.Option("income", "Income"),

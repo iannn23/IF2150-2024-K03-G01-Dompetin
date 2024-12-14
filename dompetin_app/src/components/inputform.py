@@ -1,45 +1,88 @@
 import flet as ft
 import datetime
+from .balance import BalanceController
 
 def InputFormView(page: ft.Page):
     from .transaksi import TransactionManager
     transaction_manager = TransactionManager(page)
+    Balance_controller = BalanceController(page)
 
     def button_clicked(e):
         from .transaksi import Transaction
+
+        
         # Validate inputs
+
+        if selected_type.current is None:
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please select transaction type."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
+            return
+
         if selected_date.current.value == "No date selected":
-            page.snack_bar = ft.SnackBar(content=ft.Text("Please select a date."))
-            page.snack_bar.open = True
-            page.update()
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please select a date."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
             return
 
         if not tb1.value:
-            page.snack_bar = ft.SnackBar(content=ft.Text("Please enter a title."))
-            page.snack_bar.open = True
-            page.update()
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please fill the Title."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
             return
 
         if not tb2.value or not tb2.value.isdigit():
-            page.snack_bar = ft.SnackBar(content=ft.Text("Please enter a valid amount."))
-            page.snack_bar.open = True
-            page.update()
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please fill a valid amount."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
             return
 
         if selected_amenity.current is None:
-            page.snack_bar = ft.SnackBar(content=ft.Text("Please select a category."))
-            page.snack_bar.open = True
-            page.update()
+            dialog = ft.AlertDialog(
+                title=ft.Text("Error"),
+                content=ft.Text("Please select a category."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+            def close_dlg(e):
+                dialog.open = False
+                e.control.page.update()
+            page.open(dialog)
             return
 
-        if selected_type.current is None:
-            page.snack_bar = ft.SnackBar(content=ft.Text("Please select a type."))
-            page.snack_bar.open = True
-            page.update()
-            return
+        
 
         selected_amenity_value = selected_amenity.current.label.value if selected_amenity.current else "None"
-        selected_type_value = selected_type.current.label.value if selected_type.current else "None"
+        if selected_type.current.label.value == "Pengeluaran":
+            selected_type_value = "expense"
+        elif selected_type.current.label.value == "Penghasilan":
+            selected_type_value = "income"
+        else:
+            selected_type_value = "None"
+
         drafttransaction = Transaction(
             title=tb1.value,
             date=selected_date.current.value,
@@ -48,8 +91,21 @@ def InputFormView(page: ft.Page):
             transaction_type=selected_type_value
         )
         transaction_manager.add_transaction(drafttransaction)  # Add transaction to TransactionManager
+        if selected_type_value == "expense":
+            Balance_controller.decrease_balance(float(tb2.value))
+        elif selected_type_value == "income":
+            Balance_controller.increase_balance(float(tb2.value))
         t.value = str(drafttransaction)
-        page.update()   
+        dialog = ft.AlertDialog(
+                title=ft.Text("Message"),
+                content=ft.Text("Transaction Added."),
+                actions=[ft.TextButton("OK", on_click=lambda e: close_dlg(e))],
+            )
+        def close_dlg(e):
+            dialog.open = False
+            e.control.page.update()
+
+        page.open(dialog)
     
     selected_date = ft.Ref[ft.Text]()
     def handle_change(e):
@@ -114,7 +170,7 @@ def InputFormView(page: ft.Page):
         page.update()
 
     titleKategori = ft.Row([ft.Icon(ft.icons.CATEGORY), ft.Text("Kategori")])
-    amenities = ["Belanja", "Makan", "Hiburan", "Transportasi", "Tagihan", "Penghasilan"]
+    amenities = ["Belanja", "Makan", "Hiburan", "Transportasi", "Tagihan"]
     amenity_chips = []
 
     for amenity in amenities:
